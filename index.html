@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>שליחת הודעה</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="container mt-5">
+
+    <h2 class="text-center">שליחת הודעה לדיסקורד</h2>
+
+    <form id="messageForm" class="mt-4">
+        <div class="mb-3">
+            <label for="textInput" class="form-label">הזן הודעה:</label>
+            <input type="text" class="form-control" id="textInput" name="text" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">שלח הודעה</button>
+    </form>
+
+    <div id="responseMessage" class="mt-3"></div>
+
+    <script>
+        document.getElementById("messageForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            let textInput = document.getElementById("textInput").value;
+
+            let response = await fetch("/input_text", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ text: textInput })
+            });
+
+            let result = await response.json();
+            let responseDiv = document.getElementById("responseMessage");
+            
+            if (result.status === "success") {
+                responseDiv.innerHTML = `<div class="alert alert-success">${result.message}</div>`;
+            } else {
+                responseDiv.innerHTML = `<div class="alert alert-danger">שגיאה: ${result.message}</div>`;
+            }
+
+            document.getElementById("textInput").value = "";
+        });
+    </script>
+
+</body>
+</html>
